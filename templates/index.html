@@ -8,46 +8,53 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f4f4f4;
         }
-        .container {
-            margin: 50px auto;
-            padding: 20px;
-            background: white;
-            box-shadow: 0px 0px 10px gray;
-            max-width: 500px;
-            border-radius: 10px;
-        }
-        input {
-            margin: 10px;
-        }
-        button {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #218838;
+        #loading {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Pill Detection</h2>
-        <form action="/" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" required>
-            <button type="submit">Upload Image</button>
-        </form>
-        <br>
-        <button onclick="startLiveDetection()">Start Live Detection</button>
-    </div>
+
+    <h1>Upload an Image for Pill Detection</h1>
+    
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput" accept="image/*">
+        <button type="submit">Upload</button>
+    </form>
+
+    <p id="loading">Processing... Please wait.</p>
 
     <script>
-        function startLiveDetection() {
-            window.location.href = "/live";
-        }
+        document.getElementById("uploadForm").onsubmit = function(event) {
+            event.preventDefault();
+            var fileInput = document.getElementById("fileInput");
+            if (fileInput.files.length === 0) {
+                alert("Please select an image.");
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            document.getElementById("loading").style.display = "block";
+
+            fetch("/", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.open();
+                document.write(html);
+                document.close();
+            })
+            .catch(error => {
+                alert("Error uploading file.");
+                console.error(error);
+            });
+        };
     </script>
+
 </body>
 </html>

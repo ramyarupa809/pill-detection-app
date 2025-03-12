@@ -3,7 +3,7 @@ import cv2
 import torch
 import numpy as np
 import pandas as pd
-from flask import Flask, render_template, Response, request, jsonify
+from flask import Flask, render_template, Response, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 from ultralytics import YOLO
 
@@ -15,8 +15,7 @@ os.makedirs("static/detected", exist_ok=True)
 
 # ✅ Load YOLO model
 MODEL_PATH = os.path.join(os.getcwd(), "best.pt")  
-model = YOLO(MODEL_PATH)  
-camera = cv2.VideoCapture(0)  # Laptop webcam
+model = YOLO(MODEL_PATH)
 
 # ✅ Load pill details from CSV
 csv_file = "pill_details.csv"
@@ -28,10 +27,11 @@ pill_data = pd.read_csv(csv_file) if os.path.exists(csv_file) else None
 def index():
     if request.method == "POST":
         if "file" not in request.files:
-            return "No file uploaded"
+            return "No file uploaded", 400
         file = request.files["file"]
         if file.filename == "":
-            return "No selected file"
+            return "No selected file", 400
+        
         filename = secure_filename(file.filename)
         file_path = os.path.join("static/uploads", filename)
         file.save(file_path)
@@ -47,57 +47,25 @@ def index():
     return render_template("index.html")
 
 
-### === ROUTE FOR LIVE DETECTION PAGE (LAPTOP & MOBILE) === ###
-@app.route("/live")
-def live():
-    return render_template("live.html")
+### === ROUTE FOR IMAGE UPLOAD REDIRECT === ###
+@app.route("/upload", methods=["GET", "POST"])
+def upload():
+    return index()  # Calls the existing upload logic
 
 
-### === ROUTE FOR LAPTOP LIVE STREAM === ###
-@app.route("/video_feed")
-def video_feed():
-    return Response(generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame")
+### === ROUTE TO SERVE UPLOADED IMAGES === ###
+@app.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory("static/uploads", filename)
 
 
-### === FUNCTION TO PROCESS LAPTOP VIDEO FRAMES === ###
-def generate_frames():
-    while True:
-        success, frame = camera.read()
-        if not success:
-            break
-        else:
-            results = model(frame)
-            frame = results[0].plot()  # Draw bounding boxes
-
-            _, buffer = cv2.imencode(".jpg", frame)
-            frame_bytes = buffer.tobytes()
-            yield (b"--frame\r\n"
-                   b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
+### === ROUTE TO SERVE DETECTED OUTPUT IMAGES === ###
+@app.route("/detected/<filename>")
+def output_file(filename):
+    return send_from_directory("static/detected", filename)
 
 
-### === ROUTE FOR MOBILE CAMERA DETECTION === ###
-@app.route("/mobile_live", methods=["POST"])
-def mobile_live():
-    if "file" not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
-    file = request.files["file"]
-    if file.filename == "":
-        return jsonify({"error": "No selected file"}), 400
-    
-    filename = secure_filename(file.filename)
-    file_path = os.path.join("static/uploads", filename)
-    file.save(file_path)
-
-    # Run detection
-    result_image, detected_pills = detect_pills(file_path)
-
-    # Extract pill details
-    pill_metadata = extract_pill_details(detected_pills)
-
-    return jsonify({"image": result_image, "pill_info": pill_metadata})
-
-
-### === FUNCTION TO DETECT PILLS IN IMAGE === ###
+### === FUNCTION TO DETECT PILLS IN UPLOADED IMAGE === ###
 def detect_pills(image_path):
     img = cv2.imread(image_path)
     results = model(img)
