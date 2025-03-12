@@ -1,83 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Pill Detection</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            margin: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            color: #333;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            background: #007BFF;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-            margin: 10px;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        video, img {
-            width: 100%;
-            max-width: 700px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border: 2px solid #007BFF;
-        }
-    </style>
+    <title>Live Detection</title>
 </head>
 <body>
-    <div class="container">
-        <h2>Live Pill Detection</h2>
-        <button onclick="startDetection()">Start Live Detection</button>
-        <div id="videoContainer">
-            <h3>Live Feed</h3>
-            <video id="mobileCamera" autoplay playsinline style="display: none;"></video>
-            <img src="/video_feed" id="laptopFeed" style="display: none;">
-        </div>
-    </div>
+    <h2>Live Pill Detection</h2>
+
+    <!-- Laptop Live Video Stream -->
+    <h3>Live Webcam (Laptop Only)</h3>
+    <img src="{{ url_for('video_feed') }}" style="max-width: 100%;" />
+
+    <!-- Phone Camera Capture -->
+    <h3>Mobile Camera Upload</h3>
+    <input type="file" id="upload_live" accept="image/*" capture="environment">
+    <button onclick="uploadLiveImage()">Upload</button>
+    <img id="preview_live" style="max-width: 100%; display: none;">
+
+    <!-- Video Upload -->
+    <h3>Upload a Video for Detection</h3>
+    <input type="file" id="upload_video" accept="video/*">
+    <button onclick="uploadVideo()">Upload</button>
 
     <script>
-        function startDetection() {
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-            alert("Device detected: " + navigator.userAgent);
-            
-            if (isMobile) {
-                alert("Using phone camera...");
-                document.getElementById("mobileCamera").style.display = "block";
-                document.getElementById("laptopFeed").style.display = "none";
+        function uploadLiveImage() {
+            var fileInput = document.getElementById('upload_live');
+            var file = fileInput.files[0];
 
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-                    .then(function (stream) {
-                        document.getElementById("mobileCamera").srcObject = stream;
-                    })
-                    .catch(function (error) {
-                        console.error("Error accessing phone camera:", error);
-                        alert("Please allow camera access in your browser settings.");
-                    });
+            if (file) {
+                var formData = new FormData();
+                formData.append("file", file);
+
+                fetch("/upload_live", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert("Detection Complete! View Results.");
+                    window.location.href = "/detected/" + data.filename;
+                })
+                .catch(error => console.error("Error:", error));
             } else {
-                alert("Using laptop camera...");
-                document.getElementById("laptopFeed").style.display = "block";
-                document.getElementById("mobileCamera").style.display = "none";
+                alert("Please select an image first.");
+            }
+        }
+
+        function uploadVideo() {
+            var fileInput = document.getElementById('upload_video');
+            var file = fileInput.files[0];
+
+            if (file) {
+                var formData = new FormData();
+                formData.append("file", file);
+
+                fetch("/upload_video", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert("Video Processed! View Results.");
+                    window.location.href = "/detected/" + data.filename;
+                })
+                .catch(error => console.error("Error:", error));
+            } else {
+                alert("Please select a video first.");
             }
         }
     </script>
