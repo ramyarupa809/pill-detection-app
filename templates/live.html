@@ -9,58 +9,61 @@
             font-family: Arial, sans-serif;
             text-align: center;
         }
-        h2 {
-            color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-        }
         video {
             width: 100%;
-            max-height: 400px;
-            border: 2px solid #000;
+            max-width: 500px;
         }
-        .upload-section {
+        img {
+            width: 100%;
+            max-width: 500px;
             margin-top: 20px;
-        }
-        .upload-section input, .upload-section button {
-            padding: 10px;
-            margin: 10px;
-        }
-        .error {
-            color: red;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>Live Pill Detection</h2>
+    <h1>Live Pill Detection</h1>
 
-        <h3>Live Webcam (Laptop Only)</h3>
-        <img src="{{ url_for('video_feed') }}" width="600" alt="Live Webcam Feed">
+    <h2>Live Webcam (Laptop Only)</h2>
+    <img src="{{ url_for('video_feed') }}" alt="Laptop Live Stream">
 
-        <h3>Mobile Camera Upload</h3>
-        <div class="upload-section">
-            <form action="/upload" method="post" enctype="multipart/form-data">
-                <input type="file" name="file" accept="image/*" capture="camera" required>
-                <button type="submit">Upload</button>
-            </form>
-        </div>
+    <h2>Mobile Camera Detection</h2>
+    <input type="file" accept="image/*" capture="camera" id="mobileUpload">
+    <button onclick="uploadImage()">Detect</button>
+    
+    <h2>Detected Image</h2>
+    <img id="detectedImage" src="">
 
-        <h3>Upload a Video for Detection</h3>
-        <div class="upload-section">
-            <form action="/upload" method="post" enctype="multipart/form-data">
-                <input type="file" name="file" accept="video/*" required>
-                <button type="submit">Upload</button>
-            </form>
-        </div>
-    </div>
+    <h2>Pill Information</h2>
+    <p id="pillInfo"></p>
+
+    <script>
+        function uploadImage() {
+            var fileInput = document.getElementById("mobileUpload");
+            if (fileInput.files.length === 0) {
+                alert("Please take a picture or select an image.");
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            fetch("/mobile_live", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert("Error: " + data.error);
+                } else {
+                    document.getElementById("detectedImage").src = data.image;
+                    document.getElementById("pillInfo").innerText = JSON.stringify(data.pill_info, null, 2);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
 
 </body>
 </html>

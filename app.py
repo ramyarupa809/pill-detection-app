@@ -9,13 +9,14 @@ from ultralytics import YOLO
 
 app = Flask(__name__)
 
-# ✅ Load YOLO model from the correct path
-MODEL_PATH = os.path.join(os.getcwd(), "best.pt")
-if not os.path.exists(MODEL_PATH):
-    raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
+# ✅ Ensure directories exist
+os.makedirs("static/uploads", exist_ok=True)
+os.makedirs("static/detected", exist_ok=True)
 
-model = YOLO(MODEL_PATH)
-camera = cv2.VideoCapture(0)  # Default to laptop webcam
+# ✅ Load YOLO model
+MODEL_PATH = os.path.join(os.getcwd(), "best.pt")  
+model = YOLO(MODEL_PATH)  
+camera = cv2.VideoCapture(0)  # Laptop webcam
 
 # ✅ Load pill details from CSV
 csv_file = "pill_details.csv"
@@ -46,19 +47,19 @@ def index():
     return render_template("index.html")
 
 
-### === ROUTE FOR LIVE DETECTION PAGE === ###
+### === ROUTE FOR LIVE DETECTION PAGE (LAPTOP & MOBILE) === ###
 @app.route("/live")
 def live():
     return render_template("live.html")
 
 
-### === ROUTE FOR VIDEO STREAMING (LAPTOP USERS ONLY) === ###
+### === ROUTE FOR LAPTOP LIVE STREAM === ###
 @app.route("/video_feed")
 def video_feed():
     return Response(generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
-### === FUNCTION TO PROCESS VIDEO FRAMES (LAPTOP ONLY) === ###
+### === FUNCTION TO PROCESS LAPTOP VIDEO FRAMES === ###
 def generate_frames():
     while True:
         success, frame = camera.read()
@@ -66,7 +67,7 @@ def generate_frames():
             break
         else:
             results = model(frame)
-            frame = results[0].plot()  # Ensure correct rendering of bounding boxes
+            frame = results[0].plot()  # Draw bounding boxes
 
             _, buffer = cv2.imencode(".jpg", frame)
             frame_bytes = buffer.tobytes()
@@ -74,21 +75,42 @@ def generate_frames():
                    b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
 
 
-### === FUNCTION TO DETECT PILLS IN UPLOADED IMAGE === ###
+### === ROUTE FOR MOBILE CAMERA DETECTION === ###
+@app.route("/mobile_live", methods=["POST"])
+def mobile_live():
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+    
+    filename = secure_filename(file.filename)
+    file_path = os.path.join("static/uploads", filename)
+    file.save(file_path)
+
+    # Run detection
+    result_image, detected_pills = detect_pills(file_path)
+
+    # Extract pill details
+    pill_metadata = extract_pill_details(detected_pills)
+
+    return jsonify({"image": result_image, "pill_info": pill_metadata})
+
+
+### === FUNCTION TO DETECT PILLS IN IMAGE === ###
 def detect_pills(image_path):
     img = cv2.imread(image_path)
     results = model(img)
-    detected_img = results[0].plot()  # Correct way to visualize bounding boxes
+    detected_img = results[0].plot()  
 
     output_path = os.path.join("static/detected", os.path.basename(image_path))
     cv2.imwrite(output_path, detected_img)
 
-    # Get detected class names
     detected_classes = []
     for r in results:
         for box in r.boxes:
-            cls = int(box.cls[0])  # Class index
-            detected_classes.append(model.names[cls])  # Get class label
+            cls = int(box.cls[0])  
+            detected_classes.append(model.names[cls])  
 
     return output_path, detected_classes
 
@@ -96,15 +118,14 @@ def detect_pills(image_path):
 ### === FUNCTION TO EXTRACT PILL DETAILS FROM CSV === ###
 def extract_pill_details(detected_classes):
     details = []
-    
     if pill_data is not None:
         for pill in detected_classes:
             pill_info = pill_data[pill_data["Pill Name"].str.strip().str.lower() == pill.strip().lower()]
             if not pill_info.empty:
                 details.append(pill_info.to_dict(orient="records")[0])
-
     return details
 
 
+### === START THE FLASK APP === ###
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000, debug=True)
