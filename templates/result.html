@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Result</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        /* Image Container - Side by Side */
+        .image-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .image-container img {
+            max-width: 45%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .image-container img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Pill Details Container */
+        .pill-details {
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        .pill-details h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .pill-details p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        .pill-details span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Button */
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .button-container a {
+            display: inline-block;
+            text-decoration: none;
+            background: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .button-container a:hover {
+            background: #0056b3;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .image-container img {
+                max-width: 90%;
+            }
+            
+            .pill-details {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Detection Result</h2>
+
+    <div class="image-container">
+        <div>
+            <h3>Uploaded Image</h3>
+            <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="Uploaded Image">
+        </div>
+        <div>
+            <h3>Detected Image</h3>
+            <img src="{{ url_for('static', filename='detected/' + filename) }}" alt="Detected Image">
+        </div>
+    </div>
+
+    {% if pill_info %}
+        {% for pill in pill_info %}
+            <div class="pill-details">
+                <h3>{{ pill["Pill Name"] }}</h3>
+                <p><span>Company:</span> {{ pill["Company"] }}</p>
+                <p><span>Dosage:</span> {{ pill["Dosage"] }}</p>
+                <p><span>Uses:</span> {{ pill["Uses"] }}</p>
+                <p><span>Side Effects:</span> {{ pill["Side Effects"] }}</p>
+                <p><span>Markings:</span> {{ pill["Markings"] }}</p>
+                <p><span>Color:</span> {{ pill["Color"] }}</p>
+                <p><span>Shape:</span> {{ pill["Shape"] }}</p>
+                <p><span>Size:</span> {{ pill["Size"] }}</p>
+                <p><span>Components:</span> {{ pill["Components"] }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No pill details found.</p>
+    {% endif %}
+
+    <div class="button-container">
+        <a href="/">Upload Another Image</a>
+    </div>
+
+</body>
+</html>

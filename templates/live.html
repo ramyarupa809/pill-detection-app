@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Pill Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            background: #007BFF;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        video, img {
+            width: 100%;
+            max-width: 700px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 2px solid #007BFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Live Pill Detection</h2>
+        <button onclick="startDetection()">Start Live Detection</button>
+        <div id="videoContainer">
+            <h3>Live Feed</h3>
+            <video id="mobileCamera" autoplay playsinline style="display: none;"></video>
+            <img src="/video_feed" id="laptopFeed" style="display: none;">
+        </div>
+    </div>
+
+    <script>
+        function startDetection() {
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+            alert("Device detected: " + navigator.userAgent);
+            
+            if (isMobile) {
+                alert("Using phone camera...");
+                document.getElementById("mobileCamera").style.display = "block";
+                document.getElementById("laptopFeed").style.display = "none";
+
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                    .then(function (stream) {
+                        document.getElementById("mobileCamera").srcObject = stream;
+                    })
+                    .catch(function (error) {
+                        console.error("Error accessing phone camera:", error);
+                        alert("Please allow camera access in your browser settings.");
+                    });
+            } else {
+                alert("Using laptop camera...");
+                document.getElementById("laptopFeed").style.display = "block";
+                document.getElementById("mobileCamera").style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
