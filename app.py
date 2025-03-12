@@ -9,16 +9,14 @@ from ultralytics import YOLO
 
 app = Flask(__name__)
 
-# Load YOLO model
-model = YOLO("runs/detect/train/weights/best.pt")  # Update with your trained model path
+# ✅ Load YOLO model from the root directory
+MODEL_PATH = os.path.join(os.getcwd(), "best.pt")  # Ensure correct path
+model = YOLO(MODEL_PATH)  
 camera = cv2.VideoCapture(0)  # Default to laptop webcam
 
-# Load pill details CSV
+# ✅ Load pill details from CSV
 csv_file = "pill_details.csv"
-if os.path.exists(csv_file):
-    pill_data = pd.read_csv(csv_file)
-else:
-    pill_data = None
+pill_data = pd.read_csv(csv_file) if os.path.exists(csv_file) else None
 
 
 ### === ROUTE FOR HOME PAGE (UPLOAD IMAGE) === ###
@@ -130,4 +128,3 @@ def output_file(filename):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000, debug=True)
-
