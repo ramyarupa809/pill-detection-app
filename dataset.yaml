@@ -1,0 +1,9 @@
+path: C:/Users/jandh/OneDrive/Desktop/pill_1000/dataset  # Root dataset folder
+train: train/images  # Training images folder
+val: val/images      # Validation images folder
+test: test/images    # Test images folder
+
+nc: 25  # Total number of classes
+names: ["Dolo_650", "Thyronorm_25", "Omez", "Glibest_M_2", "Mox", "Dolojust", "Snezee", "E_D_Phenicol", "Asechlo_p", "Supradyn_daily",
+        "Easibreathe", "MultipreX", "Ampoxin_500", "Famocid_20", "Riflux_fortz", "Dicoliv_MR", "Moxivir_250", "Dynapar", "Digene", "Aten-25",
+        "Sorbitrate_5", "Famocid_40", "Megapen", "Lovolkem", "Bruphen"]

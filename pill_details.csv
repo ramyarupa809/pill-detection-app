@@ -1,0 +1,26 @@
+Pill Name,Company,Dosage,Uses,Side Effects,Markings,Color,Shape,Size,Components
+Dolo_650,XYZ Ltd,650mg,"Fever, Pain",None,D650,White,Oval,Medium,Paracetamol
+Thyronorm_25,ABC Pharma,25mcg,Thyroid,None,T25,Pink,Round,Small,Thyroxine
+Omez,Omez Ltd,20mg,Acidity,Nausea,O20,Green,Capsule,Small,Omeprazole
+Glibest_M_2,Glibest Pharma,2mg,Diabetes,Dizziness,G2,Blue,Round,Large,Metformin
+Mox,Mox Healthcare,500mg,Infection,Stomach Pain,M500,White,Tablet,Medium,Amoxicillin
+Dolojust,DoloMed,10mg,Pain Relief,Drowsiness,D10,Yellow,Capsule,Small,Ibuprofen
+Snezee,Snezee Inc.,5mg,Allergy,Dry Mouth,S5,Red,Oval,Medium,Levocetirizine
+E_D_Phenicol,Phenicol Biotech,250mg,Bacterial Infection,Skin Rash,P250,Brown,Tablet,Medium,Chloramphenicol
+Asechlo_p,Asechlo Labs,100mg,Anti-inflammatory,Headache,A100,White,Capsule,Small,Acetaminophen
+Supradyn_daily,Supradyn Ltd,Daily,Multivitamin,None,S-D,Orange,Tablet,Medium,Multivitamins
+Easibreathe,EasiMed,10mg,Respiratory Relief,Nasal Irritation,E10,Green,Capsule,Small,Salbutamol
+MultipreX,MultipreX Healthcare,500mg,Immune Booster,None,M500,Purple,Tablet,Medium,"Zinc, Vitamin C"
+Ampoxin_500,Ampoxin Pharma,500mg,Antibiotic,Diarrhea,A500,Red,Capsule,Small,Amoxicillin
+Famocid_20,Famocid Ltd,20mg,Acid Reflux,Constipation,F20,Blue,Capsule,Medium,Famotidine
+Riflux_fortz,Riflux Ltd,10mg,Digestive Aid,Indigestion,R10,Yellow,Tablet,Large,Magnesium Hydroxide
+Dicoliv_MR,Dicoliv Pharma,250mg,Muscle Relaxant,Muscle Weakness,D250,White,Tablet,Medium,Dantrolene
+Moxivir_250,Moxivir Meds,250mg,Antibiotic,Nausea,M250,Green,Capsule,Small,Levofloxacin
+Dynapar,Dynapar Biotech,50mg,Painkiller,Gastric Irritation,D50,Orange,Round,Medium,Diclofenac
+Digene,Digene Healthcare,10mg,Digestion,Constipation,D10,Pink,Round,Small,Aluminum Hydroxide
+Aten-25,Aten Pharma,25mg,Hypertension,Dizziness,A25,Blue,Round,Medium,Atenolol
+Sorbitrate_5,Sorbitrate Labs,5mg,Heart Disease,Flushing,S5,Red,Round,Small,Isosorbide Dinitrate
+Famocid_40,Famocid Labs,40mg,Acid Reducer,Headache,F40,Blue,Capsule,Medium,Famotidine
+Megapen,Megapen Biotech,500mg,Broad Spectrum Antibiotic,Vomiting,M500,Green,Capsule,Large,Ampicillin
+Lovolkem,Lovolkem Pharma,250mg,Anti-inflammatory,Liver Effects,L250,White,Tablet,Medium,Ketoprofen
+Bruphen,Bruphen Meds,400mg,Pain Relief,Drowsiness,B400,Brown,Tablet,Large,Ibuprofen
