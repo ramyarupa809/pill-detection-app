@@ -1,72 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Live Detection</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Pill Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        video {
+            width: 100%;
+            max-height: 400px;
+            border: 2px solid #000;
+        }
+        .upload-section {
+            margin-top: 20px;
+        }
+        .upload-section input, .upload-section button {
+            padding: 10px;
+            margin: 10px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 <body>
-    <h2>Live Pill Detection</h2>
 
-    <!-- Laptop Live Video Stream -->
-    <h3>Live Webcam (Laptop Only)</h3>
-    <img src="{{ url_for('video_feed') }}" style="max-width: 100%;" />
+    <div class="container">
+        <h2>Live Pill Detection</h2>
 
-    <!-- Phone Camera Capture -->
-    <h3>Mobile Camera Upload</h3>
-    <input type="file" id="upload_live" accept="image/*" capture="environment">
-    <button onclick="uploadLiveImage()">Upload</button>
-    <img id="preview_live" style="max-width: 100%; display: none;">
+        <h3>Live Webcam (Laptop Only)</h3>
+        <img src="{{ url_for('video_feed') }}" width="600" alt="Live Webcam Feed">
 
-    <!-- Video Upload -->
-    <h3>Upload a Video for Detection</h3>
-    <input type="file" id="upload_video" accept="video/*">
-    <button onclick="uploadVideo()">Upload</button>
+        <h3>Mobile Camera Upload</h3>
+        <div class="upload-section">
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept="image/*" capture="camera" required>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
 
-    <script>
-        function uploadLiveImage() {
-            var fileInput = document.getElementById('upload_live');
-            var file = fileInput.files[0];
+        <h3>Upload a Video for Detection</h3>
+        <div class="upload-section">
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept="video/*" required>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+    </div>
 
-            if (file) {
-                var formData = new FormData();
-                formData.append("file", file);
-
-                fetch("/upload_live", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert("Detection Complete! View Results.");
-                    window.location.href = "/detected/" + data.filename;
-                })
-                .catch(error => console.error("Error:", error));
-            } else {
-                alert("Please select an image first.");
-            }
-        }
-
-        function uploadVideo() {
-            var fileInput = document.getElementById('upload_video');
-            var file = fileInput.files[0];
-
-            if (file) {
-                var formData = new FormData();
-                formData.append("file", file);
-
-                fetch("/upload_video", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert("Video Processed! View Results.");
-                    window.location.href = "/detected/" + data.filename;
-                })
-                .catch(error => console.error("Error:", error));
-            } else {
-                alert("Please select a video first.");
-            }
-        }
-    </script>
 </body>
 </html>
