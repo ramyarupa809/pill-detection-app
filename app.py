@@ -9,12 +9,16 @@ from ultralytics import YOLO
 
 app = Flask(__name__)
 
-# ✅ Load YOLO model from the root directory
-MODEL_PATH = os.path.join(os.getcwd(), "best.pt")  # Ensure correct path
-model = YOLO(MODEL_PATH)  
+# ✅ Ensure model exists before loading
+MODEL_PATH = os.path.join(os.getcwd(), "best.pt")
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
+
+# ✅ Load YOLO model from the correct path
+model = YOLO(MODEL_PATH)
 camera = cv2.VideoCapture(0)  # Default to laptop webcam
 
-# ✅ Load pill details from CSV
+# ✅ Load pill details CSV safely
 csv_file = "pill_details.csv"
 pill_data = pd.read_csv(csv_file) if os.path.exists(csv_file) else None
 
